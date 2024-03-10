@@ -119,10 +119,11 @@
 
       document.addEventListener("DOMContentLoaded", function () {
         // конечная дата
-        const x = new Date("2024-03-11T05:35:00");
+        const x = new Date("2024-03-10T23:35:00");
         // часовой пояс
         // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-        var deadline = changeTimezone(x, "Europe/Kyiv");
+        var deadline = changeTimezone(x, "America/New_York");
+        // var deadline = changeTimezone(x, "Europe/Kyiv");
         // id таймера
         let timerId = null;
         // склонение числительных
