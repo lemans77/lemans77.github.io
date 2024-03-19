@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        background-image: url("https://raw.githubusercontent.com/lemans77/lemans77.github.io/master/t3_bckg.jpg");
+        background-position: center;
+        background-size: cover;
+        color: white;
+      }
+      .middle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+      body {
+        margin: 0;
+        font-family: "Roboto", system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif,
+          "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+          "Noto Color Emoji";
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        -webkit-text-size-adjust: 100%;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        display: flex;
+        justify-content: center;
+      }
+      .timer__items {
+        display: flex;
+        font-size: 6em;
+        align-items: stretch;
+      }
+      .timer__item {
+        position: relative;
+        min-width: 60px;
+        margin-left: 0.3em;
+        margin-right: 0.3em;
+        padding-bottom: 45px;
+        text-align: center;
+        line-height: 1;
+        font-weight: bold;
+        /*color: green;*/
+      }
+      .timer__item::before {
+        content: attr(data-title);
+        display: block;
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        font-size: 1.25rem;
+        font-weight: normal;
+        /* color: white; */
+      }
+      .timer__divider {
+        width: 1px;
+        padding: 0;
+        margin: 0;
+        opacity: 0.25;
+        background-color: white;
+      }
+      @media screen and (max-width: 1300px) {
+        body {
+          font-size: 0.85rem;
+        }
+      }
+      @media screen and (max-width: 768px) {
+        body {
+          font-size: 0.75rem;
+        }
+        .timer__items {
+          font-size: 4em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="middle">
+      <div class="timer">
+        <div class="timer__items">
+          <div class="timer__item timer__days" data-title="днів"></div>
+          <div class="timer__divider"></div>
+          <div class="timer__item timer__hours" data-title="годин"></div>
+          <div class="timer__divider"></div>
+          <div class="timer__item timer__minutes" data-title="хвилин"></div>
+          <div class="timer__divider"></div>
+          <div class="timer__item timer__seconds" data-title="секунд"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function changeTimezone(date, ianatz) {
+        var invdate = new Date(
+          date.toLocaleString("en-US", {
+            timeZone: ianatz,
+          })
+        );
+
+        var diff = invdate.getTime() - date.getTime();
+
+        return new Date(date.getTime() - diff);
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // конечная дата
+        const x = new Date("2024-05-02T15:00:00");
+        // часовой пояс
+        // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        var deadline = changeTimezone(x, "Europe/Kyiv");
+        // id таймера
+        let timerId = null;
+        // склонение числительных
+        function declensionNum(num, words) {
+          return words[
+            num % 100 > 4 && num % 100 < 20
+              ? 2
+              : [2, 0, 1, 1, 1, 2][num % 10 < 5 ? num % 10 : 5]
+          ];
+        }
+        // вычисляем разницу дат и устанавливаем оставшееся времени в качестве содержимого элементов
+        function countdownTimer() {
+          const diff = deadline - new Date();
+          if (diff <= 0) {
+            clearInterval(timerId);
+          }
+          const days = diff > 0 ? Math.floor(diff / 1000 / 60 / 60 / 24) : 0;
+          const hours = diff > 0 ? Math.floor(diff / 1000 / 60 / 60) % 24 : 0;
+          const minutes = diff > 0 ? Math.floor(diff / 1000 / 60) % 60 : 0;
+          const seconds = diff > 0 ? Math.floor(diff / 1000) % 60 : 0;
+          $days.textContent = days < 10 ? "0" + days : days;
+          $hours.textContent = hours < 10 ? "0" + hours : hours;
+          $minutes.textContent = minutes < 10 ? "0" + minutes : minutes;
+          $seconds.textContent = seconds < 10 ? "0" + seconds : seconds;
+          $days.dataset.title = declensionNum(days, ["день", "дня", "днів"]);
+          $hours.dataset.title = declensionNum(hours, [
+            "годин",
+            "годин",
+            "годин",
+          ]);
+          $minutes.dataset.title = declensionNum(minutes, [
+            "хвилин",
+            "хвилин",
+            "хвилин",
+          ]);
+          $seconds.dataset.title = declensionNum(seconds, [
+            "секунд",
+            "секунд",
+            "секунд",
+          ]);
+        }
+        // получаем элементы, содержащие компоненты даты
+        const $days = document.querySelector(".timer__days");
+        const $hours = document.querySelector(".timer__hours");
+        const $minutes = document.querySelector(".timer__minutes");
+        const $seconds = document.querySelector(".timer__seconds");
+        // вызываем функцию countdownTimer
+        countdownTimer();
+        // вызываем функцию countdownTimer каждую секунду
+        timerId = setInterval(countdownTimer, 1000);
+      });
+    </script>
+  </body>
+</html>
